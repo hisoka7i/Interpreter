@@ -1,0 +1,24 @@
+let five = 5;
+let ten = 10;
+
+let add = func(x,y){
+    x + y;
+};
+
+let result add(five, ten);
+
+numbers are integers -> this is a type.
+veriable names are a type
+idenifiers are a type. (idenifiers are actually part of the language and they are called keywords.)
+
+Defining the token data structure. 
+    1. We need a type. (to distinguish between "integer" and "the right bracket")
+    2. We also need a field to hold the literal value of the token.
+    3. we are taking illegal and EOF. These two we are taking as extra to help our parser
+    4. Usually token contians line number and file name to easily identify the error.
+
+Lexer
+    We are gonna write our own lexer. This wil take code as input and it is gonna give tokens as output.
+    This gonna contain only one function nextToken() which will help in getting the token. In lexer we have read input and get current position while reading.
+    A function is required to read character. This function will give the next charater and advance our position in the input.
+    Lexer only supports the ASCII characters instead of full unicode range.
