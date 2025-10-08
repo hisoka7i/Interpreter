@@ -16,7 +16,7 @@ func New(input string) *Lexer {
 }
 
 func (l *Lexer) readChar() {
-	if l.position >= len(l.input) {
+	if l.readPosition >= len(l.input) {
 		l.ch = 0 //this is ASCII code for NULL
 	} else {
 		l.ch = l.input[l.readPosition]
@@ -25,22 +25,24 @@ func (l *Lexer) readChar() {
 	l.readPosition += 1
 } //this function will give us the bnext character and advance our position in the input stream
 
-func (l *Lexer) NextToken() token.Token{ //we are getting the current token for the character and then we are shifting the pointer to the next character
+func (l *Lexer) NextToken() token.Token { //we are getting the current token for the character and then we are shifting the pointer to the next character
 	var tok token.Token
 
 	switch l.ch {
 	case '=':
 		tok = newToken(token.ASSIGN, l.ch)
+	case ',':
+		tok = newToken(token.COMMA, l.ch)
 	case ';':
 		tok = newToken(token.SEMICOLON, l.ch)
 	case '+':
 		tok = newToken(token.ADD, l.ch)
 	case '(':
-		tok = newToken(token.RPAREN, l.ch)
-	case ')':
 		tok = newToken(token.LPAREN, l.ch)
+	case ')':
+		tok = newToken(token.RPAREN, l.ch)
 	case '{':
-		tok = newToken(token.RBRACE, l.ch)
+		tok = newToken(token.LBRACE, l.ch)
 	case '}':
 		tok = newToken(token.RBRACE, l.ch)
 	case 0:
@@ -51,6 +53,6 @@ func (l *Lexer) NextToken() token.Token{ //we are getting the current token for 
 	return tok
 }
 
-func newToken(tokenType token.TokenType, ch byte) token.Token{
+func newToken(tokenType token.TokenType, ch byte) token.Token {
 	return token.Token{Type: tokenType, Literal: string(ch)}
 }
