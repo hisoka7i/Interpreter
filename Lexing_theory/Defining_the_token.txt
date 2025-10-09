@@ -31,3 +31,13 @@ Lexer
 
 
 Note: Difficulty of parsing different language often comes down to how far can you peek ahead and backwards
+Start of a REPL
+    a. Read Eval Print loop: reads input, sends it to interpreter for evaluation, prints the result/ouput of the interpreter.
+
+Now we need to parse the token
+    a. It takes input and builds a data structure - often some kind of parse tree, abstract syntax tree
+    b. We need the data structure to present the input
+    c. In most programming, the data structure that is used is "abstract syntax tree"
+    d. This process of parsing is also known as syntactic analysis
+    e. There are pre build parser generators
+    
