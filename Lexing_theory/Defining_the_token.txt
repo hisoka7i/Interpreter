@@ -22,3 +22,12 @@ Lexer
     This gonna contain only one function nextToken() which will help in getting the token. In lexer we have read input and get current position while reading.
     A function is required to read character. This function will give the next charater and advance our position in the input.
     Lexer only supports the ASCII characters instead of full unicode range.
+
+    Extending our token set and lexer
+        a. We have added a function to read words and check if it is a idenifier or is it a keyword. 
+        b. We have added a function to read integers
+        c. We have added more operators other than add
+        d. We are adding peekChar to the lexer, just in case we want to peek in the character ahead
+
+
+Note: Difficulty of parsing different language often comes down to how far can you peek ahead and backwards
