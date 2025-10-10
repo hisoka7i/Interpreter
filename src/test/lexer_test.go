@@ -1,6 +1,7 @@
-package lexer
+package test
 
 import (
+	"interpreter/src/lexer"
 	"interpreter/src/token"
 	"testing"
 )
@@ -21,7 +22,7 @@ func TestNextToken(t *testing.T){
 		{token.SEMICOLON , ";"},
 		{token.EOF, ""},
 	}
-	l := New(input)
+	l := lexer.New(input)
 	for i, tt := range tests {
 		tok := l.NextToken()
 
@@ -82,7 +83,7 @@ func TestStringToken(t *testing.T){
 		{token.SEMICOLON, ";"},
 		{token.EOF, ""},
 	}
-	l := New(input)
+	l := lexer.New(input)
 	for i, tt := range tests {
 		tok := l.NextToken()
 
@@ -173,7 +174,7 @@ func TestMathToken(t *testing.T){
 		{token.EOF, ""},
 	}
 	//right now our lexer job is not to get identify the error right now we just need to create tokens so that we can work
-	l := New(input)
+	l := lexer.New(input)
 	for i, tt := range tests {
 		tok := l.NextToken()
 

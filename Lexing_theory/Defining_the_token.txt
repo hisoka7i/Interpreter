@@ -40,4 +40,23 @@ Now we need to parse the token
     c. In most programming, the data structure that is used is "abstract syntax tree"
     d. This process of parsing is also known as syntactic analysis
     e. There are pre build parser generators
-    
+
+AST: There are no parenthesis, command, semicolons and other things it is pretty abstract in nature.
+Context free grammer: The set of rules to describe how to form correct sentences in a language.
+    ECMAScript(javascript) this is described using Backus - Nuar form (a notation used to describe the syntax)
+
+We are gonna write our own parser. Usually are there are different types of parsers top down, bottom up, recursive parser and others
+
+
+In our language, we are using let for binding. let <identifier> = <expression>
+Remember expression create values not the statements. let x  = 5; does not create a value but 5 does.
+    a. So out AST will have an identifier and expresssion, and a Node which is gonna contain tokenLiteral()
+    b. So our AST is just list of statements. 
+    c. For our variable binding we need a name of the variable, and we also need a field that points to the expression on the right side of the variable and the expression can be anything.
+
+Writing a parser
+    a. We are using 2 pointer kind of approach, we have current token and next token, we requrire nextToken in order to identify if after 5 (INT) there is semicolon or there is a arithematic expression
+    b. Parser contains three things one is lexer(in order to get the tokens), we need current token and we need next token
+    c. We have a parse program, we are using recursive descent parser
+        c.1: Idea behind the parse program is to create a node and we need to identify the token and based on the token we are going to proceed, like if there is let token or if there is IF token or else if there is return token. 
+        c.2: Based on the current token we need to identify if the next token is correct or not.
