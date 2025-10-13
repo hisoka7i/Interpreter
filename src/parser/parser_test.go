@@ -9,7 +9,7 @@ import (
 func TestLetStatement(t *testing.T) {
 	input := `let x = 5;
 	let y = 10;
-	let footbar = 83830;
+	let foobar = 83830;
 	`
 
 	l := lexer.New(input)
