@@ -60,3 +60,6 @@ Writing a parser
     c. We have a parse program, we are using recursive descent parser
         c.1: Idea behind the parse program is to create a node and we need to identify the token and based on the token we are going to proceed, like if there is let token or if there is IF token or else if there is return token. 
         c.2: Based on the current token we need to identify if the next token is correct or not.
+    d. We are creating test case for the parser. 
+        d.1: Idea is pretty much the same which is to get input 
+        d.2: Create ast from the input and check if the ast is correct or not

@@ -39,5 +39,25 @@ func TestLetStatement(t *testing.T) {
 }
 
 func testLetStatement(t *testing.T, s ast.Statement, name string) bool {
+	if s.TokenLiteral() != "let"{
+		t.Fatalf("Token literal is not let instead it is %q", s.TokenLiteral())
+		return false
+	} //for the let statement the fist thing used be token which is let
+	letStmt, ok := s.(*ast.LetStatement) //this is type check for the interface 
+	if !ok{
+		t.Errorf("Let statment value is incorrect got=%q",letStmt.Name.Value)
+		return false
+	}
 
+	if letStmt.Name.Value != name{
+		t.Errorf("Did not get the expected value '%s' got=%s", name, letStmt.Name.Value)
+		return false
+	}
+
+	if letStmt.Name.TokenLiteral() != name{
+		t.Errorf("s.Name not '%s'. got=%s", name, letStmt.TokenLiteral())
+		return false
+	}
+	//if everything is correct then simply return true
+	return true
 }
