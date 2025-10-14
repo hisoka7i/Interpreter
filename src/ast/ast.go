@@ -1,11 +1,13 @@
 package ast
 
 import (
+	"bytes"
 	"interpreter/src/token"
 )
 
 type Node interface {
 	TokenLiteral() string //this will be used for debugging and testing
+	String() string //.This is to print our ast, which in turn will make our life easier
 }
 
 type Statement interface {
@@ -30,14 +32,66 @@ func (p *Program) TokenLiteral() string {
 	}
 } //this is going to be the root of the AST
 
+func (p *Program) String() string {
+	var out bytes.Buffer
+	
+	for _, s := range p.Statements{
+		out.WriteString(s.String())
+	}
+	return out.String()
+}
+
+func (ls *LetStatement) String() string{
+	var out bytes.Buffer
+
+	out.WriteString(ls.TokenLiteral() + " ")
+	out.WriteString(ls.Name.String())
+	out.WriteString(" = ")
+	
+	if ls.Value != nil{
+		out.WriteString(ls.Value.String())
+	}
+	out.WriteString(";")
+	return  out.String()
+} 
+
+func (rs *ReturnStatement) String() string{
+	var out bytes.Buffer
+
+	out.WriteString(rs.TokenLiteral() + " ")
+	if rs.ReturnValue != nil{
+		out.WriteString(rs.ReturnValue.String())
+	}
+	out.WriteString(";")
+	return  out.String()
+}
+
+func (i *Identifier) String() string {return  i.Value}
+
 type LetStatement struct{
 	Token token.Token
 	Name *Identifier
 	Value Expression
 } //this is going to be the binding statement and we are going to need, token. identifier and the expression
 
+type ReturnStatement struct{ //here we are defining the ast for the return statement
+	Token token.Token
+	ReturnValue Expression
+} 
+
+type ExpressionStatement struct{
+	Token token.Token
+	Value Expression
+} //this is the ast for the expressions
+
+func (es *ExpressionStatement) statementNode(){}
+func (es *ExpressionStatement) TokenLiteral() string {return es.Token.Literal}
+
 func (ls *LetStatement) statementNode(){}
 func (ls *LetStatement) TokenLiteral() string {return ls.Token.Literal}
+
+func (rs *ReturnStatement) statementNode(){}
+func (rs *ReturnStatement) TokenLiteral() string {return rs.Token.Literal} //this is function overloading for the return statement
 
 type Identifier struct{
 	Token token.Token
