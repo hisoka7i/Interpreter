@@ -7,7 +7,7 @@ import (
 
 type Node interface {
 	TokenLiteral() string //this will be used for debugging and testing
-	String() string //.This is to print our ast, which in turn will make our life easier
+	String() string       //.This is to print our ast, which in turn will make our life easier
 }
 
 type Statement interface {
@@ -19,6 +19,22 @@ type Expression interface {
 	Node
 	expressionNode()
 }
+
+type LetStatement struct {
+	Token token.Token
+	Name  *Identifier
+	Value Expression
+} //this is going to be the binding statement and we are going to need, token. identifier and the expression
+
+type ReturnStatement struct { //here we are defining the ast for the return statement
+	Token       token.Token
+	ReturnValue Expression
+}
+
+type ExpressionStatement struct {
+	Token token.Token
+	Value Expression
+} //this is the ast for the expressions
 
 type Program struct { //this is going to be the root node of every AST
 	Statements []Statement
@@ -34,70 +50,62 @@ func (p *Program) TokenLiteral() string {
 
 func (p *Program) String() string {
 	var out bytes.Buffer
-	
-	for _, s := range p.Statements{
+
+	for _, s := range p.Statements {
 		out.WriteString(s.String())
 	}
 	return out.String()
 }
 
-func (ls *LetStatement) String() string{
+func (ls *LetStatement) String() string {
 	var out bytes.Buffer
 
 	out.WriteString(ls.TokenLiteral() + " ")
 	out.WriteString(ls.Name.String())
 	out.WriteString(" = ")
-	
-	if ls.Value != nil{
+
+	if ls.Value != nil {
 		out.WriteString(ls.Value.String())
 	}
 	out.WriteString(";")
-	return  out.String()
-} 
+	return out.String()
+}
 
-func (rs *ReturnStatement) String() string{
+func (rs *ReturnStatement) String() string {
 	var out bytes.Buffer
 
 	out.WriteString(rs.TokenLiteral() + " ")
-	if rs.ReturnValue != nil{
+	if rs.ReturnValue != nil {
 		out.WriteString(rs.ReturnValue.String())
 	}
 	out.WriteString(";")
-	return  out.String()
+	return out.String()
 }
 
-func (i *Identifier) String() string {return  i.Value}
+func (es *ExpressionStatement) String() string {
+	if es.Value != nil {
+		return es.Value.String()
+	}
+	return ""
+}
 
-type LetStatement struct{
-	Token token.Token
-	Name *Identifier
-	Value Expression
-} //this is going to be the binding statement and we are going to need, token. identifier and the expression
+func (i *Identifier) String() string { return i.Value }
 
-type ReturnStatement struct{ //here we are defining the ast for the return statement
-	Token token.Token
-	ReturnValue Expression
-} 
+func (es *ExpressionStatement) statementNode()       {}
+func (es *ExpressionStatement) TokenLiteral() string { return es.Token.Literal }
 
-type ExpressionStatement struct{
-	Token token.Token
-	Value Expression
-} //this is the ast for the expressions
+func (ls *LetStatement) statementNode()       {}
+func (ls *LetStatement) TokenLiteral() string { return ls.Token.Literal }
 
-func (es *ExpressionStatement) statementNode(){}
-func (es *ExpressionStatement) TokenLiteral() string {return es.Token.Literal}
+func (rs *ReturnStatement) statementNode()       {}
+func (rs *ReturnStatement) TokenLiteral() string { return rs.Token.Literal } //this is function overloading for the return statement
 
-func (ls *LetStatement) statementNode(){}
-func (ls *LetStatement) TokenLiteral() string {return ls.Token.Literal}
-
-func (rs *ReturnStatement) statementNode(){}
-func (rs *ReturnStatement) TokenLiteral() string {return rs.Token.Literal} //this is function overloading for the return statement
-
-type Identifier struct{
+type Identifier struct {
 	Token token.Token
 	Value string
 }
+
 //statement node and expression node is such that it is only to differentiate between the two nodes
 
-func (ls *Identifier) expressionNode(){}
-func (ls *Identifier) TokenLiteral() string {return  ls.Token.Literal} //this is going to be used to hold the name of the identifier
+func (ls *Identifier) expressionNode()      {}
+func (ls *Identifier) TokenLiteral() string { return ls.Token.Literal } //this is going to be used to hold the name of the identifier
