@@ -26,8 +26,8 @@ func (l *Lexer) readChar() {
 } //this function will give us the bnext character and advance our position in the input stream
 
 func (l *Lexer) NextToken() token.Token { //we are getting the current token for the character and then we are shifting the pointer to the next character
-	var tok token.Token
-	l.skipWhiteSpace() //we are skipping all the whitespaces, new lines, tab and /r since they are not relevant in making token
+	var tok token.Token //here we are creating the variable
+	l.skipWhiteSpace()  //we are skipping all the whitespaces, new lines, tab and /r since they are not relevant in making token
 	switch l.ch {
 	case '=':
 		if l.peekChar() == '=' {
