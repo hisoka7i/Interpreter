@@ -31,9 +31,14 @@ type ReturnStatement struct { //here we are defining the ast for the return stat
 	ReturnValue Expression
 }
 
-type ExpressionStatement struct {
+type Identifier struct {
 	Token token.Token
-	Value Expression
+	Value string
+}
+
+type ExpressionStatement struct {
+	Token      token.Token
+	Expression Expression
 } //this is the ast for the expressions
 
 type Program struct { //this is going to be the root node of every AST
@@ -83,8 +88,8 @@ func (rs *ReturnStatement) String() string {
 }
 
 func (es *ExpressionStatement) String() string {
-	if es.Value != nil {
-		return es.Value.String()
+	if es.Expression != nil {
+		return es.Expression.String()
 	}
 	return ""
 }
@@ -94,16 +99,13 @@ func (i *Identifier) String() string { return i.Value }
 func (es *ExpressionStatement) statementNode()       {}
 func (es *ExpressionStatement) TokenLiteral() string { return es.Token.Literal }
 
+//ast.ExpressionStatement fullfills that as.Statement interface.
+
 func (ls *LetStatement) statementNode()       {}
 func (ls *LetStatement) TokenLiteral() string { return ls.Token.Literal }
 
 func (rs *ReturnStatement) statementNode()       {}
 func (rs *ReturnStatement) TokenLiteral() string { return rs.Token.Literal } //this is function overloading for the return statement
-
-type Identifier struct {
-	Token token.Token
-	Value string
-}
 
 //statement node and expression node is such that it is only to differentiate between the two nodes
 
