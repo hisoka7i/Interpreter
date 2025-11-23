@@ -79,6 +79,18 @@ Writing a parser(We are creating parser for let,return and other things one by o
             d.8.i: We need to take care of the operator precedence
             d.8.ii: Same type can appear in mulitple positions. Validity of a token's position now depends on the context. It heavily depends on the language and what operators and what syntax that you have allowed for the programming language.
             d.8.iii: We are write a String function in our ast so that it will become easy to debug
+    e. We are not going to have postfix operator. We are only going to have prefix operator.
+    f. We are going to have infix operators. They appear in binary operands.
+    g. Order of operations is critical.
+    h. Look at the parser code and then look at the theory. 
+
+
+Implementing the Pratt parser
+    a. Whenever expression token is encountered parsing functions are called to called to parse appropriate expressions and return an ast node representation this.
+    b. Creating prefix and inflix parse function.
+
+
+
 
 To do list
     1. Our lexer only supports ASCII characters instead of full Unicode range. 
