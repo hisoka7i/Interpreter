@@ -104,7 +104,7 @@ func testLetStatement(t *testing.T, s ast.Statement, name string) bool {
 	return true
 }
 
-func testIdentifierStatement(t *testing.T) {
+func TestIdentifierStatement(t *testing.T) {
 	input := "foobar"
 	l := lexer.New(input)
 	p := New(l)

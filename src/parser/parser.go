@@ -38,6 +38,10 @@ type Parser struct {
 	//we need helper functions to add the entries into the map
 }
 
+func (p *Parser) parseIdentifier() ast.Expression {
+	return &ast.Identifier{Token: p.curToken, Value: p.curToken.Literal}
+}
+
 func (p *Parser) registerPreflix(tokenType token.TokenType, fn prefixParseFn) {
 	p.preflixParseFns[tokenType] = fn
 }
@@ -106,7 +110,7 @@ func (p *Parser) parseExpressionStatement() *ast.ExpressionStatement {
 }
 
 func (p *Parser) parseExpression(precedence int) ast.Expression {
-	prefix := p.prefixExpression[p.curToken.Type]
+	prefix := p.preflixParseFns[p.curToken.Type]
 
 	if prefix == nil {
 		return nil
