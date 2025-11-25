@@ -56,7 +56,8 @@ func New(l *lexer.Lexer) *Parser {
 
 	p.nextToken()
 	p.nextToken() //we are reading 2 tokens, we setting the current and next token
-
+	p.preflixParseFns = make(map[token.TokenType]prefixParseFn)
+	p.registerPreflix(token.IDENT, p.parseIdentifier)
 	return p
 }
 

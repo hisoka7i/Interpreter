@@ -88,6 +88,8 @@ Writing a parser(We are creating parser for let,return and other things one by o
 Implementing the Pratt parser
     a. Whenever expression token is encountered parsing functions are called to called to parse appropriate expressions and return an ast node representation this.
     b. Creating prefix and inflix parse function.
+    c. We need to make parseExpression
+    d. 
 
 
 
@@ -96,3 +98,4 @@ To do list
     1. Our lexer only supports ASCII characters instead of full Unicode range. 
         a. In order to suport Unicode and UTF - 8 we need to change lexer character(l.ch) from byte to rune (int32)
     2. Right now we are only reading integers in number need to extend support for float as well as double and other things. Atleast do float.
+
