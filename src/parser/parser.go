@@ -7,30 +7,66 @@ import (
 	"interpreter/src/token"
 )
 
+// this iota is for the order preference.
+// _ means 0 and as we go down the number increases.
+const (
+	_ int = iota
+	LOWEST
+	EQUALS
+	LESSGREATER //< or >
+	SUM
+	PRODUCT
+	PREFIX
+	CALL
+)
+
+type (
+	prefixParseFn func() ast.Expression
+	inflixParseFn func(ast.Expression) ast.Expression //because we need to know, what is the left side of the inflix operation
+)
+
 type Parser struct {
 	l *lexer.Lexer //this is to repeatedly call the next token
 	//in order to implement debugging we need to log the error
-	errors []string
+	errors    []string
 	curToken  token.Token
 	peekToken token.Token
+
+	//Our parser need to know the correct inflex and preflix, for that we need
+	preflixParseFns map[token.TokenType]prefixParseFn
+	inflixParseFns  map[token.TokenType]inflixParseFn
+	//we need helper functions to add the entries into the map
+}
+
+func (p *Parser) parseIdentifier() ast.Expression {
+	return &ast.Identifier{Token: p.curToken, Value: p.curToken.Literal}
+}
+
+func (p *Parser) registerPreflix(tokenType token.TokenType, fn prefixParseFn) {
+	p.preflixParseFns[tokenType] = fn
+}
+
+func (p *Parser) registerInflix(tokenType token.TokenType, fn inflixParseFn) {
+	p.inflixParseFns[tokenType] = fn
 }
 
 func New(l *lexer.Lexer) *Parser {
 	p := &Parser{l: l,
-	errors: []string{},}
+		errors: []string{}}
 
 	p.nextToken()
 	p.nextToken() //we are reading 2 tokens, we setting the current and next token
-
+	p.preflixParseFns = make(map[token.TokenType]prefixParseFn)
+	p.registerPreflix(token.IDENT, p.parseIdentifier)
 	return p
 }
 
-func (p *Parser) Errors() []string{
+func (p *Parser) Errors() []string {
 	return p.errors
 }
 
-func (p *Parser) peekError(t token.TokenType){ //this will be used when the peektoken does not have the expected type
-	msg := fmt.Sprintf("expected next token to be %s, got %s instead",t, p.curToken.Type)
+func (p *Parser) peekError(t token.TokenType) { //this will be used when the peektoken does not have the expected type
+	msg := fmt.Sprintf("expected next token to be %s, got %s instead", t, p.curToken.Type)
 	p.errors = append(p.errors, msg)
 }
 
@@ -39,7 +75,7 @@ func (p *Parser) nextToken() {
 	p.peekToken = p.l.NextToken()
 }
 
-func (p *Parser) ParserProgram() *ast.Program {
+func (p *Parser) ParseProgram() *ast.Program {
 	program := &ast.Program{}
 	program.Statements = []ast.Statement{}
 
@@ -60,17 +96,37 @@ func (p *Parser) parseStatement() ast.Statement {
 	case token.RETURN:
 		return p.parseReturnStatement()
 	default:
-		return nil
+		return p.parseExpressionStatement()
 	}
 }
 
-func (p *Parser) parseReturnStatement() *ast.ReturnStatement{
+// now we are parsing Expression Statement
+func (p *Parser) parseExpressionStatement() *ast.ExpressionStatement {
+	stmt := &ast.ExpressionStatement{Token: p.curToken}
+	stmt.Expression = p.parseExpression(LOWEST)
+	if p.peekTokenIs(token.SEMICOLON) {
+		p.nextToken()
+	}
+	return stmt
+}
+
+func (p *Parser) parseExpression(precedence int) ast.Expression {
+	prefix := p.preflixParseFns[p.curToken.Type]
+
+	if prefix == nil {
+		return nil
+	}
+	leftExp := prefix()
+	return leftExp
+}
+
+func (p *Parser) parseReturnStatement() *ast.ReturnStatement {
 	stmt := &ast.ReturnStatement{Token: p.curToken}
 
 	p.nextToken()
 
 	//we are skipping all the expression till EOF
-	if !p.expectPeek(token.SEMICOLON){
+	if !p.expectPeek(token.SEMICOLON) {
 		p.nextToken()
 	}
 	return stmt
@@ -105,7 +161,7 @@ func (p *Parser) peekTokenIs(t token.TokenType) bool {
 }
 
 func (p *Parser) expectPeek(t token.TokenType) bool { //this is one of the "assertion functions: nearly all parsers share.
-//This is to ensure the correctness of the next token
+	//This is to ensure the correctness of the next token
 	if p.peekTokenIs(t) {
 		p.nextToken()
 		return true
