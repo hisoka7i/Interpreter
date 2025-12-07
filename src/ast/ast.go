@@ -20,6 +20,11 @@ type Expression interface {
 	expressionNode()
 }
 
+type IntegerLiteral struct {
+	Token token.Token
+	Value int64
+}
+
 type LetStatement struct {
 	Token token.Token
 	Name  *Identifier
@@ -111,3 +116,7 @@ func (rs *ReturnStatement) TokenLiteral() string { return rs.Token.Literal } //t
 
 func (ls *Identifier) expressionNode()      {}
 func (ls *Identifier) TokenLiteral() string { return ls.Token.Literal } //this is going to be used to hold the name of the identifier
+
+func (il *IntegerLiteral) expressionNode()      {}
+func (il *IntegerLiteral) TokenLiteral() string { return il.Token.Literal }
+func (il *IntegerLiteral) String() string       { return il.Token.Literal }
