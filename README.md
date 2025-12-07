@@ -89,7 +89,7 @@ Implementing the Pratt parser
     a. Whenever expression token is encountered parsing functions are called to called to parse appropriate expressions and return an ast node representation this.
     b. Creating prefix and inflix parse function.
     c. We need to make parseExpression
-    d. 
+    d. Integer literals: 
 
 
 
