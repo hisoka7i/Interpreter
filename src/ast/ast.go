@@ -5,6 +5,12 @@ import (
 	"interpreter/src/token"
 )
 
+type PrefixExpression struct {
+	Token    token.Token
+	Operator string
+	Right    Expression
+}
+
 type Node interface {
 	TokenLiteral() string //this will be used for debugging and testing
 	String() string       //.This is to print our ast, which in turn will make our life easier
@@ -120,3 +126,15 @@ func (ls *Identifier) TokenLiteral() string { return ls.Token.Literal } //this i
 func (il *IntegerLiteral) expressionNode()      {}
 func (il *IntegerLiteral) TokenLiteral() string { return il.Token.Literal }
 func (il *IntegerLiteral) String() string       { return il.Token.Literal }
+
+// This one is prefix Expression
+func (pe *PrefixExpression) expressionNode()      {}
+func (pe *PrefixExpression) TokenLiteral() string { return pe.Token.Literal }
+func (pe *PrefixExpression) String() string {
+	var out bytes.Buffer
+	out.WriteString("(")
+	out.WriteString(pe.Operator)
+	out.WriteString(pe.Right.String())
+	out.WriteString(")")
+	return out.String()
+}
