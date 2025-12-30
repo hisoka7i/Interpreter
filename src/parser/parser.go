@@ -71,9 +71,29 @@ func New(l *lexer.Lexer) *Parser {
 	p.nextToken()
 	p.nextToken() //we are reading 2 tokens, we setting the current and next token
 	p.preflixParseFns = make(map[token.TokenType]prefixParseFn)
+	p.registerPreflix(token.BANG, p.parsePrefixExpression)
+	p.registerPreflix(token.SUBTRACT, p.parsePrefixExpression)
 	p.registerPreflix(token.IDENT, p.parseIdentifier)
 	p.registerPreflix(token.INT, p.parseIntegerLiteral)
 	return p
+}
+
+/*
+	Here we are adding the prefix expression parsing
+
+we are adding expression token and operator
+then we are moving to the next token and setting the right hand expression with prefix precedence
+*/
+func (p *Parser) parsePrefixExpression() ast.Expression {
+	expression := &ast.PrefixExpression{
+		Token:    p.curToken,
+		Operator: p.curToken.Literal,
+	}
+	p.nextToken()
+	//since more then one token needs to be parsed we are calling parse expression
+	expression.Right = p.parseExpression(PREFIX)
+	//current token is the open after prefix operator argument
+	return expression
 }
 
 func (p *Parser) Errors() []string {
@@ -116,6 +136,7 @@ func (p *Parser) parseStatement() ast.Statement {
 }
 
 // now we are parsing Expression Statement
+// There is no precendence for this function it just uses the LOWEST
 func (p *Parser) parseExpressionStatement() *ast.ExpressionStatement {
 	stmt := &ast.ExpressionStatement{Token: p.curToken}
 	stmt.Expression = p.parseExpression(LOWEST)
@@ -125,10 +146,12 @@ func (p *Parser) parseExpressionStatement() *ast.ExpressionStatement {
 	return stmt
 }
 
+// We are using the precedence to parse the expression correctly
 func (p *Parser) parseExpression(precedence int) ast.Expression {
 	prefix := p.preflixParseFns[p.curToken.Type]
 
 	if prefix == nil {
+		p.noPrefixParseFnError(p.curToken.Type)
 		return nil
 	}
 	leftExp := prefix()
@@ -183,4 +206,10 @@ func (p *Parser) expectPeek(t token.TokenType) bool { //this is one of the "asse
 	}
 	p.peekError(t)
 	return false
+}
+
+// we are adding parse Expression method to give us better error message
+func (p *Parser) noPrefixParseFnError(t token.TokenType) {
+	msg := fmt.Sprintf("No prefix parse function for %s found", t)
+	p.errors = append(p.errors, msg)
 }
