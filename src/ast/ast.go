@@ -5,6 +5,13 @@ import (
 	"interpreter/src/token"
 )
 
+type InflixExpression struct {
+	Token    token.Token
+	Left     Expression
+	Operator string
+	Right    Expression
+}
+
 type PrefixExpression struct {
 	Token    token.Token
 	Operator string
@@ -135,6 +142,19 @@ func (pe *PrefixExpression) String() string {
 	out.WriteString("(")
 	out.WriteString(pe.Operator)
 	out.WriteString(pe.Right.String())
+	out.WriteString(")")
+	return out.String()
+}
+
+// this one is for inflix expression
+func (ie *InflixExpression) expressionNode()      {}
+func (ie *InflixExpression) TokenLiteral() string { return ie.Token.Literal }
+func (ie *InflixExpression) String() string {
+	var out bytes.Buffer
+	out.WriteString("(")
+	out.WriteString(ie.Left.String())
+	out.WriteString(" " + ie.Operator + " ")
+	out.WriteString(ie.Right.String())
 	out.WriteString(")")
 	return out.String()
 }

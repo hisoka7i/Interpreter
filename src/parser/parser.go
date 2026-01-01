@@ -21,6 +21,33 @@ const (
 	CALL
 )
 
+// adding precendence map or table
+var precedence = map[token.TokenType]int{
+	token.EQ:       EQUALS,
+	token.NOT_EQ:   EQUALS,
+	token.LT:       LESSGREATER,
+	token.GT:       LESSGREATER,
+	token.ADD:      SUM,
+	token.SUBTRACT: SUM,
+	token.SLASH:    PRODUCT,
+	token.ASTERISK: PRODUCT,
+}
+
+// this function will return the precedence of the peek token(next token)
+func (p *Parser) peekPrecedence() int {
+	if p, ok := precedence[p.peekToken.Type]; ok {
+		return p
+	}
+	return LOWEST
+}
+
+func (p *Parser) curPrecedence() int {
+	if p, ok := precedence[p.curToken.Type]; ok {
+		return p
+	}
+	return LOWEST
+}
+
 type (
 	prefixParseFn func() ast.Expression
 	inflixParseFn func(ast.Expression) ast.Expression //because we need to know, what is the left side of the inflix operation
@@ -75,7 +102,29 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerPreflix(token.SUBTRACT, p.parsePrefixExpression)
 	p.registerPreflix(token.IDENT, p.parseIdentifier)
 	p.registerPreflix(token.INT, p.parseIntegerLiteral)
+	//we need to register the infix parse functions
+	p.inflixParseFns = make(map[token.TokenType]inflixParseFn)
+	p.registerInflix(token.ADD, p.parseInfixExpression)
+	p.registerInflix(token.SUBTRACT, p.parseInfixExpression)
+	p.registerInflix(token.SLASH, p.parseInfixExpression)
+	p.registerInflix(token.ASTERISK, p.parseInfixExpression)
+	p.registerInflix(token.EQ, p.parseInfixExpression)
+	p.registerInflix(token.NOT_EQ, p.parseInfixExpression)
+	p.registerInflix(token.LT, p.parseInfixExpression)
+	p.registerInflix(token.GT, p.parseInfixExpression)
 	return p
+}
+
+func (p *Parser) parseInfixExpression(left ast.Expression) ast.Expression {
+	expression := &ast.InflixExpression{
+		Token:    p.curToken,
+		Operator: p.curToken.Literal,
+		Left:     left,
+	}
+	precedence := p.curPrecedence()
+	p.nextToken()
+	expression.Right = p.parseExpression(precedence)
+	return expression
 }
 
 /*
@@ -155,6 +204,14 @@ func (p *Parser) parseExpression(precedence int) ast.Expression {
 		return nil
 	}
 	leftExp := prefix()
+	for !p.peekTokenIs(token.SEMICOLON) && precedence < p.peekPrecedence() {
+		infix := p.inflixParseFns[p.peekToken.Type]
+		if infix == nil {
+			return leftExp
+		}
+		p.nextToken()
+		leftExp = infix(leftExp)
+	}
 	return leftExp
 }
 

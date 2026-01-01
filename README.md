@@ -89,8 +89,9 @@ Implementing the Pratt parser
     a. Whenever expression token is encountered parsing functions are called to called to parse appropriate expressions and return an ast node representation this.
     b. Creating prefix and inflix parse function.
     c. We need to make parseExpression
-    d. Integer literals: 
-
+    d. Integer literals: The value they produce is the integer itself. 
+    e. Prefix Expression: Here program.Statement should contain 2 instead of 1.
+    f. Inflix Operator: We require a left Expression a operator and then a right operator for this one, example (5+5). Plus we also require a precedence table as we need to precedence for long calculations like 5+5*5-0. 
 
 
 
